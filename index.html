@@ -341,7 +341,7 @@ select.wc-in{appearance:auto}
 <div class="wrap">
   <header class="hdr">
     <h1 id="appTitle">TOEFL VOCA</h1>
-    <div class="sub">에빙하우스 망각곡선 기반 단어 암기 · v1.1.1</div>
+    <div class="sub">에빙하우스 망각곡선 기반 단어 암기 · v1.1.2</div>
   </header>
 
   <nav class="tabs">
@@ -390,7 +390,7 @@ select.wc-in{appearance:auto}
       <div class="scan-hint">탭하여 다음 단어 · 자동으로 넘어갑니다</div>
       <div style="margin-top:14px;display:flex;gap:8px">
         <button class="btn btn-s" style="flex:1" onclick="scanPrev()">← 이전</button>
-        <button class="btn btn-p" style="flex:1" onclick="goPhase2()">② 집중학습 →</button>
+        <button class="btn btn-p" id="scanCompleteBtn" style="flex:1" onclick="goPhase2()">다 봤어요 → 집중학습</button>
       </div>
     </div>
 
@@ -425,7 +425,7 @@ select.wc-in{appearance:auto}
       </div>
       <div class="rate-info" id="rateInfo"></div>
       <div style="margin-top:14px">
-        <button class="btn btn-p btn-bl" onclick="goPhase3()">③ 시험 보기 →</button>
+        <button class="btn btn-p btn-bl" id="deepCompleteBtn" onclick="goPhase3()">집중학습 건너뛰기 → 시험</button>
       </div>
     </div>
 
@@ -454,7 +454,10 @@ select.wc-in{appearance:auto}
           <div class="qz-cnt" id="qCnt">1 / 15</div>
         </div>
       </div>
-      <button class="btn btn-p btn-bl" id="qBtn" onclick="submitA()">확인</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-no" id="qUnknownBtn" style="flex:1" onclick="markUnknown()">모름</button>
+        <button class="btn btn-p" id="qBtn" style="flex:2" onclick="submitA()">확인</button>
+      </div>
     </div>
 
     <div id="vRes" style="display:none">
@@ -22154,7 +22157,7 @@ var S={
   deepQueue:[], di:0, unknownWords:[], deepPass:1,
   qWords:[], qi:0, qOk:0, qNo:0, qPt:0, qAns:[], quizMode:'ko', synStyle:'match', synChoices:[],
   scanInt:null, scanProg:0,
-  tab:'home', hintUsed:false
+  tab:'home', hintUsed:false, quizCompleteReady:false
 };
 
 Object.keys(DAYS).forEach(function(dk){
@@ -22468,7 +22471,7 @@ function startScan(){
   hideAll();
   document.getElementById('vTimerBar').style.display='block';
   document.getElementById('vScan').style.display='block';
-  S.ci=0;renderScan();startTmr();startScanAuto();
+  S.ci=0;document.getElementById('scanCompleteBtn').textContent='다 봤어요 → 집중학습';renderScan();startTmr();startScanAuto();
 }
 function renderScan(){
   var w=S.studyWords[S.ci];
@@ -22497,7 +22500,7 @@ function startScanAuto(){
 }
 function scanNext(){
   if(S.ci<S.studyWords.length-1){S.ci++;renderScan();S.scanProg=0}
-  else{if(S.scanInt)clearInterval(S.scanInt);goPhase2()}
+  else{if(S.scanInt)clearInterval(S.scanInt);document.getElementById('scanCompleteBtn').textContent='세트 완료 → 집중학습';toast('훑어보기 세트 완료! 버튼을 눌러 다음 페이즈로 이동하세요')}
 }
 function scanPrev(){
   if(S.ci>0){S.ci--;renderScan();S.scanProg=0}
@@ -22509,6 +22512,7 @@ function goPhase2(){
   document.getElementById('vTimerBar').style.display='block';
   document.getElementById('vDeep').style.display='block';
   S.deepQueue=shuffle(S.studyWords.slice());S.di=0;S.unknownWords=[];S.deepPass=1;
+  document.getElementById('deepCompleteBtn').textContent='집중학습 건너뛰기 → 시험';
   renderFC();
 }
 function renderFC(){
@@ -22545,8 +22549,9 @@ function rateWord(known){
       S.deepPass++;S.deepQueue=shuffle(S.unknownWords.slice());S.unknownWords=[];S.di=0;
       toast('몰라요 단어 '+S.deepQueue.length+'개 재학습!');renderFC();
     }else{
-      toast(S.unknownWords.length>0?'모든 재학습 완료! 시험으로 넘어갑니다':'모든 단어 학습 완료!');
-      goPhase3();
+      toast(S.unknownWords.length>0?'모든 재학습 완료! 완료 버튼을 눌러주세요':'집중학습 세트 완료! 완료 버튼을 눌러주세요');
+      document.getElementById('deepCompleteBtn').textContent='세트 완료 → 시험 보기';
+      document.querySelectorAll('.rate-btns .btn').forEach(function(btn){btn.disabled=true});
     }
   }else{renderFC()}
 }
@@ -22567,7 +22572,8 @@ function goPhase3(){
   showPhase(3);hideAll();
   document.getElementById('vQuiz').style.display='block';
   S.qWords=getQuizWords(S.quizMode);
-  S.qi=0;S.qOk=0;S.qNo=0;S.qPt=0;S.qAns=[];S.hintUsed=false;
+  S.qi=0;S.qOk=0;S.qNo=0;S.qPt=0;S.qAns=[];S.hintUsed=false;S.quizCompleteReady=false;
+  document.querySelectorAll('.rate-btns .btn').forEach(function(btn){btn.disabled=false});
   renderQ();
 }
 function getQuizWords(mode){
@@ -22635,14 +22641,15 @@ function renderQ(){
   document.getElementById('qPos').innerHTML=posBadge(w.pos)+' <button class="spk-btn spk-sm" onclick="speakQuiz()" title="발음 듣기">'+SPK_SVG+'</button>';
   document.getElementById('qCnt').textContent=(S.qi+1)+' / '+S.qWords.length;
   var inp=document.getElementById('qIn');inp.value='';inp.className='qz-in';inp.disabled=false;
-  var choices=document.getElementById('synChoices'),qBtn=document.getElementById('qBtn');
+  var choices=document.getElementById('synChoices'),qBtn=document.getElementById('qBtn'),unknownBtn=document.getElementById('qUnknownBtn');
   choices.className='syn-choices';choices.innerHTML='';qBtn.style.display='block';
+  unknownBtn.style.display='block';
   if(S.quizMode==='syn'&&S.synStyle==='match'){
     inp.style.display='none';
     document.getElementById('qInst').textContent='알맞은 동의어를 이어 보세요';
     S.synChoices=buildSynChoices(w);
     choices.innerHTML=S.synChoices.map(function(value,i){return '<div class="syn-opt" onclick="chooseSyn('+i+',this)"><span>'+esc(value)+'</span><span class="spk-btn spk-sm" onclick="event.stopPropagation();speak(\''+value.replace(/\\/g,'\\\\').replace(/'/g,'&#39;')+'\')">'+SPK_SVG+'</span></div>'}).join('');
-    choices.classList.add('show');qBtn.style.display='none';
+    choices.classList.add('show');qBtn.style.display='none';unknownBtn.style.display='none';
   }else{
     inp.style.display='block';inp.focus();
     if(S.quizMode==='syn')document.getElementById('qInst').textContent='이 단어의 동의어(영어)를 입력하세요';
@@ -22656,6 +22663,13 @@ function renderQ(){
   if(S.quizMode!=='syn'&&hasSyn(w)){hBtn.style.display='inline-flex';hBtn.disabled=false}
   else{hBtn.style.display='none'}
 }
+function markUnknown(){
+  var btn=document.getElementById('qBtn');
+  if(btn.textContent==='다음'||S.quizCompleteReady)return;
+  var inp=document.getElementById('qIn');
+  inp.value='__모름__';
+  submitA();
+}
 function showSynHint(){
   var w=S.qWords[S.qi];
   if(!w.syn)return;
@@ -22668,7 +22682,17 @@ function showSynHint(){
 function submitA(){
   var inp=document.getElementById('qIn'),fb=document.getElementById('qFb'),btn=document.getElementById('qBtn');
   var w=S.qWords[S.qi];
-  if(btn.textContent==='다음'){S.qi++;if(S.qi>=S.qWords.length){showRes()}else{renderQ()}return}
+  if(S.quizCompleteReady){showRes();return}
+  if(btn.textContent==='다음'){
+    S.qi++;
+    if(S.qi>=S.qWords.length){
+      S.quizCompleteReady=true;btn.textContent='세트 완료 → 결과 보기';btn.style.display='block';
+      document.getElementById('qUnknownBtn').style.display='none';
+      document.getElementById('qInst').textContent='수기 입력 세트 완료!';
+      fb.innerHTML='<span style="color:var(--ok)">완료 버튼을 눌러 다음 페이즈로 이동하세요.</span>';
+    }else{renderQ()}
+    return
+  }
   var ans=inp.value.trim();if(!ans){toast('답을 입력하세요');return}
   var grade='wrong';
   if(S.quizMode==='ko'){
@@ -22688,6 +22712,7 @@ function submitA(){
   }
   S.qAns.push({word:w.word,meaning:w.meaning,answer:ans,grade:grade,correct:grade==='full',id:w.id,dayId:w.dayId,hintUsed:S.hintUsed});
   inp.disabled=true;btn.textContent='다음';
+  document.getElementById('qUnknownBtn').style.display='none';
   document.getElementById('qHintBtn').style.display='none';
 }
 
