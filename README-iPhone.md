@@ -4,7 +4,7 @@ This folder contains the installable iPhone/PWA build.
 
 ## Version
 
-- Current: `1.2.1`
+- Current: `1.2.2`
 - Format: `major.minor.patch`
 - Major: incompatible app or data redesign
 - Minor: substantial new study features
