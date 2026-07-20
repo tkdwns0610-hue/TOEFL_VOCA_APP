@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toefl-voca-1.1.0';
+const CACHE_NAME = 'toefl-voca-1.1.1';
 const APP_ASSETS = [
   './',
   './index.html',
