@@ -279,6 +279,13 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
   font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:500;color:var(--t2);cursor:pointer;
   text-align:center;transition:.2s}
 .mode-btn.on{border-color:var(--acc);color:var(--acc);background:var(--acc-d)}
+.syn-style{display:none;gap:6px;justify-content:center;margin:-4px 0 12px}
+.syn-style.show{display:flex}.syn-style .mode-btn{flex:0 1 140px}
+.syn-choices{display:none;flex-direction:column;gap:8px;width:100%;margin:12px 0}
+.syn-choices.show{display:flex}
+.syn-opt{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:12px 14px;border:1px solid var(--bdr);border-radius:var(--rs);background:var(--inp);color:var(--t1);font-size:13px;cursor:pointer;text-align:left}
+.syn-opt:hover{border-color:var(--acc);background:var(--acc-d)}
+.syn-opt.disabled{pointer-events:none;opacity:.72}.syn-opt.correct{border-color:var(--ok);background:var(--ok-d)}.syn-opt.wrong{border-color:var(--no);background:var(--no-d)}
 
 .tip-box{margin-top:8px;padding:10px 14px;background:linear-gradient(135deg,var(--acc-d),rgba(91,156,246,.08));
   border-left:3px solid var(--acc);border-radius:0 var(--rs) var(--rs) 0;font-size:14px;line-height:1.7;color:var(--t2)}
@@ -334,7 +341,7 @@ select.wc-in{appearance:auto}
 <div class="wrap">
   <header class="hdr">
     <h1 id="appTitle">TOEFL VOCA</h1>
-    <div class="sub">에빙하우스 망각곡선 기반 단어 암기</div>
+    <div class="sub">에빙하우스 망각곡선 기반 단어 암기 · v1.1.0</div>
   </header>
 
   <nav class="tabs">
@@ -405,6 +412,7 @@ select.wc-in{appearance:auto}
             <div class="fc-ex-ko" id="fcEKo"></div>
             <div class="ex-listen" id="fcListen"><button class="spk-btn spk-sm" onclick="event.stopPropagation();speakExample()" title="예문 듣기"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></button> 예문 듣기</div>
             <div class="fc-syn" id="fcS"></div>
+            <div class="ex-listen" id="fcSynListen"><button class="spk-btn spk-sm" onclick="event.stopPropagation();speakSynonyms()" title="동의어 듣기"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></button> 동의어 듣기</div>
             <div class="fc-tip" id="fcTip"></div>
             <div class="fc-hint">뜻을 확인했으면 아래 버튼을 누르세요</div>
           </div>
@@ -428,6 +436,10 @@ select.wc-in{appearance:auto}
           <button class="mode-btn" id="modeEn" onclick="setMode('en')">한→영</button>
           <button class="mode-btn" id="modeSyn" onclick="setMode('syn')">동의어</button>
         </div>
+        <div class="syn-style" id="synStyle">
+          <button class="mode-btn on" id="synMatch" onclick="setSynStyle('match')">동의어 잇기</button>
+          <button class="mode-btn" id="synWrite" onclick="setSynStyle('write')">동의어 쓰기</button>
+        </div>
         <div class="qz-q">
           <div class="qz-w" id="qW">—</div>
           <div class="qz-p" id="qP"></div>
@@ -435,6 +447,7 @@ select.wc-in{appearance:auto}
           <div class="qz-pos" id="qPos"></div>
           <div class="qz-inst" id="qInst">이 단어의 뜻을 입력하세요</div>
           <input type="text" class="qz-in" id="qIn" placeholder="뜻 입력..." onkeydown="if(event.key==='Enter')submitA()" autocomplete="off">
+          <div class="syn-choices" id="synChoices"></div>
           <button class="qz-hint-btn" id="qHintBtn" onclick="showSynHint()"> 동의어 힌트</button>
           <div class="qz-hint-text" id="qHintText" style="display:none"></div>
           <div class="qz-fb" id="qFb"></div>
@@ -22139,7 +22152,7 @@ var S={
   studyWords:[], ci:0,
   tInt:null, tSec:900, tTotal:900, tRun:false,
   deepQueue:[], di:0, unknownWords:[], deepPass:1,
-  qWords:[], qi:0, qOk:0, qNo:0, qPt:0, qAns:[], quizMode:'ko',
+  qWords:[], qi:0, qOk:0, qNo:0, qPt:0, qAns:[], quizMode:'ko', synStyle:'match', synChoices:[],
   scanInt:null, scanProg:0,
   tab:'home', hintUsed:false
 };
@@ -22247,6 +22260,7 @@ function speak(text){
 if('speechSynthesis' in window){window.speechSynthesis.getVoices();if(window.speechSynthesis.onvoiceschanged!==undefined)window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices()}}
 function speakWord(){if(S.deepQueue.length>0&&S.di<S.deepQueue.length)speak(S.deepQueue[S.di].word)}
 function speakExample(){if(S.deepQueue.length>0&&S.di<S.deepQueue.length&&S.deepQueue[S.di].ex)speak(S.deepQueue[S.di].ex)}
+function speakSynonyms(){if(S.deepQueue.length>0&&S.di<S.deepQueue.length&&S.deepQueue[S.di].syn)speak(S.deepQueue[S.di].syn)}
 function speakQuiz(){if(S.qWords.length>0&&S.qi<S.qWords.length)speak(S.qWords[S.qi].word)}
 function speakScan(){if(S.studyWords.length>0&&S.ci<S.studyWords.length)speak(S.studyWords[S.ci].word)}
 
@@ -22509,6 +22523,7 @@ function renderFC(){
   document.getElementById('fcEKo').textContent=w.exampleKo||'';
   document.getElementById('fcListen').style.display=w.ex?'flex':'none';
   document.getElementById('fcS').textContent=w.syn?'= '+w.syn:'';
+  document.getElementById('fcSynListen').style.display=w.syn?'flex':'none';
   var fcTipEl=document.getElementById('fcTip');
   if(w.tip){fcTipEl.innerHTML='<div class="tip-box"><div class="tip-label"> 암기팁</div>'+esc(w.tip)+'</div>';fcTipEl.style.display='block'}
   else{fcTipEl.style.display='none'}
@@ -22564,6 +22579,7 @@ function setMode(m){
   document.getElementById('modeKo').classList.toggle('on',m==='ko');
   document.getElementById('modeEn').classList.toggle('on',m==='en');
   document.getElementById('modeSyn').classList.toggle('on',m==='syn');
+  document.getElementById('synStyle').classList.toggle('show',m==='syn');
   if(m==='ko'){document.getElementById('qInst').textContent='이 단어의 뜻을 입력하세요';document.getElementById('qIn').placeholder='뜻 입력...'}
   else if(m==='en'){document.getElementById('qInst').textContent='이 뜻에 해당하는 영어 단어를 입력하세요';document.getElementById('qIn').placeholder='영단어 입력...'}
   else{document.getElementById('qInst').textContent='이 단어의 동의어(영어)를 입력하세요';document.getElementById('qIn').placeholder='synonym 입력...'}
@@ -22572,6 +22588,36 @@ function setMode(m){
     if(S.qWords.length===0){toast(m==='syn'?'동의어가 있는 단어가 없어요':'단어가 없어요');return}
     renderQ();
   }
+}
+function setSynStyle(style){
+  S.synStyle=style;
+  document.getElementById('synMatch').classList.toggle('on',style==='match');
+  document.getElementById('synWrite').classList.toggle('on',style==='write');
+  if(S.quizMode==='syn'&&document.getElementById('vQuiz').style.display!=='none')renderQ();
+}
+function primarySyn(w){
+  if(!w||!w.syn)return'';
+  return w.syn.split(/[,،]/)[0].replace(/\s+[A-Z][a-z].*$/,'').trim();
+}
+function buildSynChoices(w){
+  var correct=primarySyn(w),pool=[];
+  S.qWords.forEach(function(other){
+    var value=primarySyn(other);
+    if(other.id!==w.id&&value&&norm(value)!==norm(correct)&&!pool.some(function(x){return norm(x)===norm(value)}))pool.push(value);
+  });
+  return shuffle([correct].concat(shuffle(pool).slice(0,3)));
+}
+function chooseSyn(index,el){
+  var inp=document.getElementById('qIn');
+  inp.value=S.synChoices[index];
+  var w=S.qWords[S.qi],picked=S.synChoices[index];
+  document.querySelectorAll('.syn-opt').forEach(function(opt,i){
+    opt.classList.add('disabled');
+    if(gradeSyn(S.synChoices[i],w.syn)==='full')opt.classList.add('correct');
+  });
+  if(gradeSyn(picked,w.syn)!=='full')el.classList.add('wrong');
+  document.getElementById('qBtn').style.display='block';
+  submitA();
 }
 function renderQ(){
   if(S.qi>=S.qWords.length){showRes();return}
@@ -22588,7 +22634,19 @@ function renderQ(){
   }
   document.getElementById('qPos').innerHTML=posBadge(w.pos)+' <button class="spk-btn spk-sm" onclick="speakQuiz()" title="발음 듣기">'+SPK_SVG+'</button>';
   document.getElementById('qCnt').textContent=(S.qi+1)+' / '+S.qWords.length;
-  var inp=document.getElementById('qIn');inp.value='';inp.className='qz-in';inp.disabled=false;inp.focus();
+  var inp=document.getElementById('qIn');inp.value='';inp.className='qz-in';inp.disabled=false;
+  var choices=document.getElementById('synChoices'),qBtn=document.getElementById('qBtn');
+  choices.className='syn-choices';choices.innerHTML='';qBtn.style.display='block';
+  if(S.quizMode==='syn'&&S.synStyle==='match'){
+    inp.style.display='none';
+    document.getElementById('qInst').textContent='알맞은 동의어를 이어 보세요';
+    S.synChoices=buildSynChoices(w);
+    choices.innerHTML=S.synChoices.map(function(value,i){return '<div class="syn-opt" onclick="chooseSyn('+i+',this)"><span>'+esc(value)+'</span><span class="spk-btn spk-sm" onclick="event.stopPropagation();speak(\''+value.replace(/\\/g,'\\\\').replace(/'/g,'&#39;')+'\')">'+SPK_SVG+'</span></div>'}).join('');
+    choices.classList.add('show');qBtn.style.display='none';
+  }else{
+    inp.style.display='block';inp.focus();
+    if(S.quizMode==='syn')document.getElementById('qInst').textContent='이 단어의 동의어(영어)를 입력하세요';
+  }
   document.getElementById('qFb').textContent='';
   document.getElementById('qBtn').textContent='확인';
 

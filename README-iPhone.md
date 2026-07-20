@@ -2,6 +2,14 @@
 
 This folder contains the installable iPhone/PWA build.
 
+## Version
+
+- Current: `1.1.0`
+- Format: `major.minor.patch`
+- Major: incompatible app or data redesign
+- Minor: substantial new study features
+- Patch: fixes and small refinements
+
 ## Install On iPhone
 
 1. Upload this folder to an HTTPS host.
@@ -14,3 +22,4 @@ This folder contains the installable iPhone/PWA build.
 
 - Day 1-30: loaded
 - Total loaded words: 1655
+- Example translation, chunking, example audio, synonym matching/writing, and synonym audio: loaded
