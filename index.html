@@ -123,6 +123,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
 .spk-btn.playing{background:var(--acc);animation:pulse-spk 1s ease infinite}
 .spk-btn svg{width:14px;height:14px;fill:var(--acc)}
 .spk-btn.playing svg{fill:#000}
+.accent-row{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap}
+.accent-btn{border:1px solid var(--bdr);background:var(--inp);color:var(--t2);border-radius:7px;padding:5px 7px;font:600 9px 'JetBrains Mono',monospace;cursor:pointer}
+.accent-btn:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-d)}
 @keyframes pulse-spk{0%,100%{box-shadow:0 0 0 0 var(--acc-g)}50%{box-shadow:0 0 0 6px transparent}}
 .spk-sm{width:24px;height:24px}.spk-sm svg{width:11px;height:11px}
 .spk-lg{width:36px;height:36px}.spk-lg svg{width:18px;height:18px}
@@ -341,7 +344,7 @@ select.wc-in{appearance:auto}
 <div class="wrap">
   <header class="hdr">
     <h1 id="appTitle">TOEFL VOCA</h1>
-    <div class="sub">에빙하우스 망각곡선 기반 단어 암기 · v1.1.2</div>
+    <div class="sub">에빙하우스 망각곡선 기반 단어 암기 · v1.2.0</div>
   </header>
 
   <nav class="tabs">
@@ -380,7 +383,7 @@ select.wc-in{appearance:auto}
         <div class="scan-pron" id="scP"></div>
         <div class="scan-kr kr-pron" id="scKr"></div>
         <div class="scan-pos" id="scPos"></div>
-        <div class="scan-spk"><button class="spk-btn" onclick="event.stopPropagation();speakScan()" title="발음 듣기"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></button></div>
+        <div class="scan-spk accent-row"><button class="accent-btn" onclick="event.stopPropagation();speakScan('en-US')">US</button><button class="accent-btn" onclick="event.stopPropagation();speakScan('en-GB')">UK</button><button class="accent-btn" onclick="event.stopPropagation();speakScan('en-AU')">AU</button><button class="accent-btn" onclick="event.stopPropagation();speakScan('en-NZ')">NZ</button></div>
         <div class="scan-meaning" id="scM">—</div>
         <div class="scan-syn" id="scSyn"></div>
         <div class="scan-tip" id="scTip"></div>
@@ -402,7 +405,7 @@ select.wc-in{appearance:auto}
             <div class="fc-pron" id="fcP"></div>
             <div class="fc-kr fc-kr-front kr-pron" id="fcKr"></div>
             <div class="fc-pos" id="fcPos"></div>
-            <div class="fc-spk"><button class="spk-btn" onclick="event.stopPropagation();speakWord()" title="발음 듣기"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></button></div>
+            <div class="fc-spk accent-row"><button class="accent-btn" onclick="event.stopPropagation();speakWord('en-US')">US</button><button class="accent-btn" onclick="event.stopPropagation();speakWord('en-GB')">UK</button><button class="accent-btn" onclick="event.stopPropagation();speakWord('en-AU')">AU</button><button class="accent-btn" onclick="event.stopPropagation();speakWord('en-NZ')">NZ</button></div>
             <div class="fc-hint">탭하여 뜻 확인</div>
           </div>
           <div class="fc-face fc-back">
@@ -410,7 +413,7 @@ select.wc-in{appearance:auto}
             <div class="fc-chunks" id="fcChunks"></div>
             <div class="fc-ex" id="fcE"></div>
             <div class="fc-ex-ko" id="fcEKo"></div>
-            <div class="ex-listen" id="fcListen"><button class="spk-btn spk-sm" onclick="event.stopPropagation();speakExample()" title="예문 듣기"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></button> 예문 듣기</div>
+            <div class="ex-listen accent-row" id="fcListen"><span>예문</span><button class="accent-btn" onclick="event.stopPropagation();speakExample('en-US')">US</button><button class="accent-btn" onclick="event.stopPropagation();speakExample('en-GB')">UK</button><button class="accent-btn" onclick="event.stopPropagation();speakExample('en-AU')">AU</button><button class="accent-btn" onclick="event.stopPropagation();speakExample('en-NZ')">NZ</button></div>
             <div class="fc-syn" id="fcS"></div>
             <div class="ex-listen" id="fcSynListen"><button class="spk-btn spk-sm" onclick="event.stopPropagation();speakSynonyms()" title="동의어 듣기"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></button> 동의어 듣기</div>
             <div class="fc-tip" id="fcTip"></div>
@@ -22149,6 +22152,8 @@ var DAYS = {
 var RI=[1,2,4,7,15,30], CIRC=2*Math.PI*88;
 var TOEFL={score:2.0};
 var STUDY_COUNT=10;
+var STUDY_ORDER=localStorage.getItem('yesVoca_studyOrder')||'smart';
+var ORDER_CURSOR={};try{ORDER_CURSOR=JSON.parse(localStorage.getItem('yesVoca_orderCursor')||'{}')}catch(e){ORDER_CURSOR={}}
 var SCAN_INTERVAL=4000;
 var S={
   currentDay:null, phase:0,
@@ -22220,6 +22225,13 @@ function allWords(){var a=[];Object.keys(DAYS).forEach(function(k){a=a.concat(DA
 
 function pickStudyWords(dk, count){
   var words=DAYS[dk].words.slice();
+  if(STUDY_ORDER==='sequential'){
+    var start=Number(ORDER_CURSOR[dk]||0)%Math.max(1,words.length),sel=[];
+    for(var si=0;si<count&&si<words.length;si++)sel.push(words[(start+si)%words.length]);
+    ORDER_CURSOR[dk]=(start+sel.length)%Math.max(1,words.length);
+    localStorage.setItem('yesVoca_orderCursor',JSON.stringify(ORDER_CURSOR));
+    return sel;
+  }
   var now=Date.now();
   var fresh=shuffle(words.filter(function(w){return w.lastReview===null}));
   var due=shuffle(words.filter(function(w){return w.nextReview!==null&&w.nextReview<=now}));
@@ -22244,13 +22256,16 @@ function esc(t){var d=document.createElement('div');d.appendChild(document.creat
 function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 function findWordById(id){var r=null;Object.keys(DAYS).forEach(function(k){if(r)return;var f=DAYS[k].words.find(function(w){return w.id===id});if(f)r=f});return r}
 
-function speak(text){
+function speak(text,lang){
   if(!('speechSynthesis' in window)){toast('이 브라우저는 음성을 지원하지 않아요');return}
   window.speechSynthesis.cancel();
-  var u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=0.85;u.pitch=1;
+  lang=lang||'en-US';
+  var u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=0.85;u.pitch=1;
   var voices=window.speechSynthesis.getVoices();
-  var v=voices.find(function(v){return v.lang.startsWith('en')&&v.name.indexOf('Google')!==-1})
-    ||voices.find(function(v){return v.lang.startsWith('en-US')})
+  var target=lang.toLowerCase();
+  var v=voices.find(function(v){return v.lang.toLowerCase()===target&&v.name.indexOf('Google')!==-1})
+    ||voices.find(function(v){return v.lang.toLowerCase()===target})
+    ||voices.find(function(v){return v.lang.toLowerCase().startsWith(target.split('-')[0])&&v.name.indexOf('Google')!==-1})
     ||voices.find(function(v){return v.lang.startsWith('en')});
   if(v)u.voice=v;
   var btns=document.querySelectorAll('.spk-btn');
@@ -22261,11 +22276,12 @@ function speak(text){
   window.speechSynthesis.speak(u);
 }
 if('speechSynthesis' in window){window.speechSynthesis.getVoices();if(window.speechSynthesis.onvoiceschanged!==undefined)window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices()}}
-function speakWord(){if(S.deepQueue.length>0&&S.di<S.deepQueue.length)speak(S.deepQueue[S.di].word)}
-function speakExample(){if(S.deepQueue.length>0&&S.di<S.deepQueue.length&&S.deepQueue[S.di].ex)speak(S.deepQueue[S.di].ex)}
+function speakWord(lang){if(S.deepQueue.length>0&&S.di<S.deepQueue.length)speak(S.deepQueue[S.di].word,lang)}
+function speakExample(lang){if(S.deepQueue.length>0&&S.di<S.deepQueue.length&&S.deepQueue[S.di].ex)speak(S.deepQueue[S.di].ex,lang)}
 function speakSynonyms(){if(S.deepQueue.length>0&&S.di<S.deepQueue.length&&S.deepQueue[S.di].syn)speak(S.deepQueue[S.di].syn)}
-function speakQuiz(){if(S.qWords.length>0&&S.qi<S.qWords.length)speak(S.qWords[S.qi].word)}
-function speakScan(){if(S.studyWords.length>0&&S.ci<S.studyWords.length)speak(S.studyWords[S.ci].word)}
+function speakQuiz(lang){if(S.qWords.length>0&&S.qi<S.qWords.length)speak(S.qWords[S.qi].word,lang)}
+function speakScan(lang){if(S.studyWords.length>0&&S.ci<S.studyWords.length)speak(S.studyWords[S.ci].word,lang)}
+function accentQuizButtons(){return '<span class="accent-row"><button class="accent-btn" onclick="speakQuiz(\'en-US\')">US</button><button class="accent-btn" onclick="speakQuiz(\'en-GB\')">UK</button><button class="accent-btn" onclick="speakQuiz(\'en-AU\')">AU</button><button class="accent-btn" onclick="speakQuiz(\'en-NZ\')">NZ</button></span>'}
 
 if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.classList.add('dark');
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(e){e.matches?document.documentElement.classList.add('dark'):document.documentElement.classList.remove('dark')});
@@ -22349,6 +22365,9 @@ function renderDayDetail(c){
     h+='<button class="wc-opt'+on+'" onclick="setStudyCount('+n+')">'+avail+'개<span class="wc-time">'+avail+'분</span></button>';
   });
   h+='</div>';
+  h+='<div class="wc-sel" style="margin-top:10px"><span class="wc-label">학습 순서</span>';
+  h+='<button class="wc-opt'+(STUDY_ORDER==='smart'?' on':'')+'" onclick="setStudyOrder(\'smart\')">추천·랜덤</button>';
+  h+='<button class="wc-opt'+(STUDY_ORDER==='sequential'?' on':'')+'" onclick="setStudyOrder(\'sequential\')">1번부터 순서대로</button></div>';
   h+='<button class="btn btn-p btn-bl" onclick="startDay()">학습 시작 ('+Math.min(STUDY_COUNT,cnt)+'단어 · '+Math.min(STUDY_COUNT,cnt)+'분)</button>';
 
   var weakWords=words.filter(function(w){return w.wrong>0&&w.level<RI.length});
@@ -22397,6 +22416,10 @@ function renderDayDetail(c){
 function setStudyCount(n){
   STUDY_COUNT=n;renderHome();
 }
+function setStudyOrder(mode){
+  STUDY_ORDER=mode;localStorage.setItem('yesVoca_studyOrder',mode);renderHome();
+  toast(mode==='sequential'?'순서대로 학습 모드':'추천·랜덤 학습 모드');
+}
 function startRetest(type){
   if(S.currentDay===null){toast('Day를 선택해 주세요');return}
   var words=DAYS[S.currentDay].words;
@@ -22407,7 +22430,7 @@ function startRetest(type){
     picks=words.filter(function(w){return w.lastReview!==null&&w.level<RI.length});
   }
   if(!picks.length){toast('재시험 볼 단어가 없어요');return}
-  S.studyWords=shuffle(picks.slice());
+  S.studyWords=orderedOrShuffle(picks);
   S.tTotal=picks.length*60;S.tSec=S.tTotal;
   S.phase=3;S.unknownWords=[];S.deepPass=1;
   go('study');
@@ -22511,7 +22534,7 @@ function goPhase2(){
   showPhase(2);hideAll();
   document.getElementById('vTimerBar').style.display='block';
   document.getElementById('vDeep').style.display='block';
-  S.deepQueue=shuffle(S.studyWords.slice());S.di=0;S.unknownWords=[];S.deepPass=1;
+  S.deepQueue=orderedOrShuffle(S.studyWords);S.di=0;S.unknownWords=[];S.deepPass=1;
   document.getElementById('deepCompleteBtn').textContent='집중학습 건너뛰기 → 시험';
   renderFC();
 }
@@ -22546,7 +22569,7 @@ function rateWord(known){
   S.di++;
   if(S.di>=S.deepQueue.length){
     if(S.unknownWords.length>0&&S.deepPass<3){
-      S.deepPass++;S.deepQueue=shuffle(S.unknownWords.slice());S.unknownWords=[];S.di=0;
+      S.deepPass++;S.deepQueue=orderedOrShuffle(S.unknownWords);S.unknownWords=[];S.di=0;
       toast('몰라요 단어 '+S.deepQueue.length+'개 재학습!');renderFC();
     }else{
       toast(S.unknownWords.length>0?'모든 재학습 완료! 완료 버튼을 눌러주세요':'집중학습 세트 완료! 완료 버튼을 눌러주세요');
@@ -22577,8 +22600,8 @@ function goPhase3(){
   renderQ();
 }
 function getQuizWords(mode){
-  if(mode==='syn'){return shuffle(S.studyWords.filter(function(w){return hasSyn(w)}))}
-  return shuffle(S.studyWords.slice());
+  if(mode==='syn'){return orderedOrShuffle(S.studyWords.filter(function(w){return hasSyn(w)}))}
+  return orderedOrShuffle(S.studyWords);
 }
 function setMode(m){
   S.quizMode=m;
@@ -22595,6 +22618,7 @@ function setMode(m){
     renderQ();
   }
 }
+function orderedOrShuffle(words){return STUDY_ORDER==='sequential'?words.slice():shuffle(words.slice())}
 function setSynStyle(style){
   S.synStyle=style;
   document.getElementById('synMatch').classList.toggle('on',style==='match');
@@ -22638,7 +22662,7 @@ function renderQ(){
     document.getElementById('qP').textContent='';
     document.getElementById('qKr').innerHTML='';
   }
-  document.getElementById('qPos').innerHTML=posBadge(w.pos)+' <button class="spk-btn spk-sm" onclick="speakQuiz()" title="발음 듣기">'+SPK_SVG+'</button>';
+  document.getElementById('qPos').innerHTML=posBadge(w.pos)+accentQuizButtons();
   document.getElementById('qCnt').textContent=(S.qi+1)+' / '+S.qWords.length;
   var inp=document.getElementById('qIn');inp.value='';inp.className='qz-in';inp.disabled=false;
   var choices=document.getElementById('synChoices'),qBtn=document.getElementById('qBtn'),unknownBtn=document.getElementById('qUnknownBtn');
@@ -22826,7 +22850,13 @@ function retryQ(){
   S.unknownWords=[];S.deepPass=1;
   go('study');showPhase(1);startScan();
 }
-function finishStudy(){autoBackup();go('home');toast('학습 완료! 복습 스케줄이 설정됐어요')}
+function finishStudy(){
+  saveProgress();
+  S.phase=0;S.quizCompleteReady=false;
+  document.getElementById('phaseBar').style.display='none';
+  go('home');
+  toast('학습 완료! 복습 스케줄이 저장됐어요');
+}
 
 function getDue(){var now=Date.now();return allWords().filter(function(w){return w.nextReview!==null&&w.nextReview<=now})}
 function getUp(){var now=Date.now();return allWords().filter(function(w){return w.nextReview!==null&&w.nextReview>now}).sort(function(a,b){return a.nextReview-b.nextReview})}
