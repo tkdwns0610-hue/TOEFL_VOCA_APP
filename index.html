@@ -52,6 +52,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
 @keyframes sDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
 .hdr h1{font-family:'Crimson Pro',serif;font-size:26px;font-weight:700;color:var(--acc);letter-spacing:-.3px}
 .hdr .sub{font-size:12px;color:var(--t3);font-weight:300;margin-top:2px}
+.speed-row{display:flex;justify-content:center;gap:5px;margin-top:8px}
+.speed-btn{border:1px solid var(--bdr);background:var(--card);color:var(--t3);border-radius:7px;padding:4px 8px;font:600 9px 'JetBrains Mono',monospace;cursor:pointer}
+.speed-btn.on{border-color:var(--acc);color:var(--acc);background:var(--acc-d)}
 
 .tabs{display:flex;gap:3px;background:var(--bg2);padding:3px;border-radius:11px;margin-bottom:20px}
 .tab{flex:1;padding:9px 4px;border:none;background:0;color:var(--t3);font-family:'Noto Sans KR',sans-serif;
@@ -344,7 +347,8 @@ select.wc-in{appearance:auto}
 <div class="wrap">
   <header class="hdr">
     <h1 id="appTitle">TOEFL VOCA</h1>
-    <div class="sub">에빙하우스 망각곡선 기반 단어 암기 · v1.2.0</div>
+    <div class="sub">에빙하우스 망각곡선 기반 단어 암기 · v1.2.1</div>
+    <div class="speed-row"><button class="speed-btn" data-rate="0.75" onclick="setSpeechRate(0.75)">0.75×</button><button class="speed-btn" data-rate="1" onclick="setSpeechRate(1)">1.0×</button><button class="speed-btn" data-rate="1.25" onclick="setSpeechRate(1.25)">1.25×</button></div>
   </header>
 
   <nav class="tabs">
@@ -22152,6 +22156,7 @@ var DAYS = {
 var RI=[1,2,4,7,15,30], CIRC=2*Math.PI*88;
 var TOEFL={score:2.0};
 var STUDY_COUNT=10;
+var SPEECH_RATE=Number(localStorage.getItem('yesVoca_speechRate')||1);
 var STUDY_ORDER=localStorage.getItem('yesVoca_studyOrder')||'smart';
 var ORDER_CURSOR={};try{ORDER_CURSOR=JSON.parse(localStorage.getItem('yesVoca_orderCursor')||'{}')}catch(e){ORDER_CURSOR={}}
 var SCAN_INTERVAL=4000;
@@ -22260,7 +22265,7 @@ function speak(text,lang){
   if(!('speechSynthesis' in window)){toast('이 브라우저는 음성을 지원하지 않아요');return}
   window.speechSynthesis.cancel();
   lang=lang||'en-US';
-  var u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=0.85;u.pitch=1;
+  var u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=SPEECH_RATE;u.pitch=1;
   var voices=window.speechSynthesis.getVoices();
   var target=lang.toLowerCase();
   var v=voices.find(function(v){return v.lang.toLowerCase()===target&&v.name.indexOf('Google')!==-1})
@@ -22416,6 +22421,11 @@ function renderDayDetail(c){
 function setStudyCount(n){
   STUDY_COUNT=n;renderHome();
 }
+function setSpeechRate(rate){
+  SPEECH_RATE=rate;localStorage.setItem('yesVoca_speechRate',String(rate));renderSpeechRate();
+  toast('재생속도 '+rate.toFixed(2).replace(/0$/,'')+'×');
+}
+function renderSpeechRate(){document.querySelectorAll('.speed-btn').forEach(function(btn){btn.classList.toggle('on',Number(btn.dataset.rate)===SPEECH_RATE)})}
 function setStudyOrder(mode){
   STUDY_ORDER=mode;localStorage.setItem('yesVoca_studyOrder',mode);renderHome();
   toast(mode==='sequential'?'순서대로 학습 모드':'추천·랜덤 학습 모드');
@@ -23007,6 +23017,7 @@ if('serviceWorker' in navigator){
   window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
 }
 loadCustomWords();
+renderSpeechRate();
 loadProgress().then(function(){renderHome();updBdg();}).catch(function(){renderHome();updBdg();});
 
 function exportData(){

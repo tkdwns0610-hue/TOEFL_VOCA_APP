@@ -4,7 +4,7 @@ This folder contains the installable iPhone/PWA build.
 
 ## Version
 
-- Current: `1.2.0`
+- Current: `1.2.1`
 - Format: `major.minor.patch`
 - Major: incompatible app or data redesign
 - Minor: substantial new study features
@@ -24,3 +24,4 @@ This folder contains the installable iPhone/PWA build.
 - Total loaded words: 1655
 - Example translation, chunking, example audio, synonym matching/writing, and synonym audio: loaded
 - Sequential study mode and US/UK/AU/NZ word/example pronunciation: loaded
+- Shared 0.75x, 1.0x, and 1.25x pronunciation speed control: loaded
